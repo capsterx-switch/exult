@@ -106,7 +106,8 @@ exult_SOURCES =	\
 	version.cc	\
 	version.h	\
 	xdrag.cc	\
-	xdrag.h
+	xdrag.h         \
+	switch/switchui.cc
 
 if BUILD_MT32EMU
 EXTRA_EXULTLIBS=audio/midi_drivers/mt32emu/libmt32emu.la

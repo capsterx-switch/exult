@@ -1,10 +1,12 @@
 #pragma once
 #include "touchui.h"
 
-class SwitchUI {
+class SwitchUI 
+  : public TouchUI
+{
 public:
 	SwitchUI();
-	virtual ~SwitchUI() = default;
+	~SwitchUI();
 	void promptForName(const char *name) override;
 	void showGameControls() override;
 	void hideGameControls() override;

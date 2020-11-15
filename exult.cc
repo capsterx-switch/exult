@@ -105,6 +105,9 @@ using namespace Pentagram;
 #ifdef __IPHONEOS__
 #  include "ios_utils.h"
 #endif
+#ifdef __SWITCH__
+#include "switch/switchui.h"
+#endif
 
 using std::atof;
 using std::cerr;
@@ -596,6 +599,8 @@ int exult_main(const char *runpath) {
 
 #ifdef __IPHONEOS__
 	touchui = new TouchUI_iOS();
+#elif defined(__SWITCH__)
+	touchui = new SwitchUI();
 #endif
 	Init();             // Create main window.
 
@@ -1957,6 +1962,7 @@ void Wait_for_arrival(
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
+		{
 			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 			switch (event.type) {
 			case SDL_MOUSEMOTION:
@@ -1966,6 +1972,7 @@ void Wait_for_arrival(
 				Mouse::mouse_update = true;
 				break;
 			}
+		}
 		// Get current time, & animate.
 		uint32 ticks = SDL_GetTicks();
 		Game::set_ticks(ticks);
@@ -2043,6 +2050,7 @@ void Wizard_eye(
 		}
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
+		{
 			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 			switch (event.type) {
 			case SDL_FINGERMOTION: {
@@ -2076,6 +2084,7 @@ void Wizard_eye(
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					timeout = true;
 			}
+		}
 		// Get current time, & animate.
 		uint32 ticks = SDL_GetTicks();
 		Game::set_ticks(ticks);
