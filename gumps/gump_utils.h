@@ -33,6 +33,8 @@
 #include "SDL_timer.h"
 #endif
 
+#include <sys/select.h>
+
 /*
  *  Delay between animations.
  */

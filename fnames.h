@@ -30,6 +30,10 @@
 #if (defined(MACOSX) || defined(__IPHONEOS__)) && !defined(EXULT_DATADIR)
 #define EXULT_DATADIR   "data"
 #endif
+#ifdef __SWITCH__
+#undef EXULT_DATADIR
+#define EXULT_DATADIR "romfs:/"
+#endif
 
 /*
  *  Here are the files we use:

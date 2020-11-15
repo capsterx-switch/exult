@@ -446,6 +446,7 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 	while (true) {
 		Delay();
 		while (SDL_PollEvent(&event)) {
+			printf("Got event %s - %d\n", __FILE__, event.type);
 			// Touch on the cheat screen will bring up the keyboard
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (SDL_IsTextInputActive())

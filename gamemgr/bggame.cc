@@ -50,6 +50,7 @@
 #include "AudioMixer.h"
 #include "mappatch.h"
 #include "touchui.h"
+#include "event_convert.h"
 
 #include "imagewin/imagewin.h"
 #include "imagewin/ArbScaler.h"
@@ -2009,6 +2010,9 @@ bool BG_Game::new_game(Vga_file &shapes) {
 		}
 
 		while (SDL_PollEvent(&event)) {
+			printf("Got event %s - %d\n", __FILE__, event.type);
+			if (convert_touch_to_mouse(gwin, event))
+				continue;
 			Uint16 keysym_unicode = 0;
 			bool isTextInput = false;
 			if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {

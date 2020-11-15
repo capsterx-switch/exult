@@ -459,6 +459,7 @@ int wait_delay(int ms, int startcol, int ncol, int rotspd) {
 		unsigned long ticks1 = SDL_GetTicks();
 		// this may be a bit risky... How fast can events be generated?
 		while (SDL_PollEvent(&event)) {
+			printf("Got event %s - %d\n", __FILE__, event.type);
 			switch (event.type) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
@@ -499,6 +500,15 @@ int wait_delay(int ms, int startcol, int ncol, int rotspd) {
 				}
 				break;
 			}
+#ifdef __SWITCH__
+			case SDL_CONTROLLERBUTTONDOWN:
+			{
+			  if (ticks1 - last_b3_click < 500)
+			  	return 1;
+			  last_b3_click = ticks1;
+			}
+#endif
+			break;
 			default:
 				break;
 			}

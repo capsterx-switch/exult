@@ -216,6 +216,7 @@ bool TextScroller::run(Game_window *gwin) {
 		do {
 			// this could be a problem when too many events are produced
 			while (SDL_PollEvent(&event)) {
+			printf("Got event %s - %d\n", __FILE__, event.type);
 				switch (event.type) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym == SDLK_RSHIFT || event.key.keysym.sym == SDLK_LSHIFT)

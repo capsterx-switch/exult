@@ -812,6 +812,7 @@ void KeyBinder::LoadDefaults() {
 	U7object txtobj(resource.str, resource.num);
 	size_t len;
 	auto txt = txtobj.retrieve(len);
+	printf("keybinding txt: %s\n", txt.get());
 	if (txt && len > 0)
 		ParseText(reinterpret_cast<char*>(txt.get()), len);
 }

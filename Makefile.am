@@ -21,6 +21,7 @@ SUBDIRS =  files conf data shapes imagewin pathfinder \
 bin_PROGRAMS = exult
 
 exult_SOURCES =	\
+	event_convert.cc	\
 	actions.cc	\
 	actions.h	\
 	actorio.cc	\

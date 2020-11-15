@@ -28,6 +28,7 @@
 #include "rect.h"
 #include "shapeid.h"
 #include "gump_utils.h"
+#include "event_convert.h"
 
 // MenuEntry: a selectable menu entry (a button)
 MenuEntry::MenuEntry(Shape_frame *on, Shape_frame *off, int xpos, int ypos) {
@@ -280,6 +281,7 @@ void MenuList::set_selection(int x, int y) {
 	selected = false;
 }
 
+
 int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 	int count = entries.size();
 	for (int i = 0; i < count; i++)
@@ -306,6 +308,11 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 		bool mouse_updated = false;
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
+			printf("Got event %s - %d\n", __FILE__, event.type);
+#ifdef __SWITCH__
+			if (convert_touch_to_mouse(gwin, event))
+				continue;
+#endif
 			int gx;
 			int gy;
 			if (event.type == SDL_MOUSEMOTION) {
@@ -317,6 +324,7 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 				//mouse->show();
 				//mouse->blit_dirty();
 			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
+				printf("Mouse down\n");
 				if (!mouse_visible) {
 					gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), gx, gy);
 
@@ -327,6 +335,7 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 					mouse_updated = false;
 				}
 			} else if (event.type == SDL_MOUSEBUTTONUP) {
+				printf("Mouse up\n");
 				gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), gx, gy);
 				auto& entry = entries[selection];
 				if (entry->is_mouse_over(gx, gy)) {
@@ -381,6 +390,14 @@ int MenuList::handle_events(Game_window *gwin, Mouse *mouse) {
 				}
 			} else if (event.type == SDL_QUIT) {
 				return -1;
+			} else if (event.type == SDL_CONTROLLERBUTTONDOWN) {
+                          switch(event.cbutton.button)
+                          {
+		            case SDL_CONTROLLER_BUTTON_BACK:
+                              return -1;
+			    default:
+			      break;
+                          };
 			}
 		}
 		if (mouse_updated) {

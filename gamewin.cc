@@ -380,7 +380,7 @@ Game_window::Game_window(
 	allow_autonotes = str == "yes";
 	config->set("config/gameplay/allow_autonotes", allow_autonotes ? "yes" : "no", false);
 	config->value("config/gameplay/scroll_with_mouse", str, "no");
-#ifdef __IPHONEOS__
+#if defined(__IPHONEOS__) || defined(__SWITCH__)
 	string default_scroll_with_mouse = "no";
 #else
 	string default_scroll_with_mouse = "yes";
@@ -388,7 +388,7 @@ Game_window::Game_window(
 	scroll_with_mouse = str == default_scroll_with_mouse;
 	config->set("config/gameplay/scroll_with_mouse",
 	            scroll_with_mouse ? "yes" : "no", false);
-#ifdef __IPHONEOS__
+#if defined(__IPHONEOS__) || defined(__SWITCH__)
 	const string default_item_menu = "yes";
 	const string default_dpad_location = "right";
 	const string default_shortcutbar = "translucent";
@@ -561,6 +561,10 @@ void Game_window::init_files(bool cycle) {
 	d = "config/disk/game/" + Game::get_gametitle() + "/keys";
 	config->value(d.c_str(), keyfilename, "(default)");
 	if (keyfilename == "(default)") {
+#ifdef __SWITCH__
+		//load alt keys
+		//load keys
+#endif
 		config->set(d.c_str(), keyfilename, true);
 		keybinder->LoadDefaults();
 	} else {

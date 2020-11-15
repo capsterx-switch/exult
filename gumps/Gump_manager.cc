@@ -48,6 +48,7 @@
 #include "jawbone.h"
 #include "spellbook.h"
 #include "touchui.h"
+#include "event_convert.h"
 
 using std::cout;
 using std::endl;
@@ -494,6 +495,7 @@ bool Gump_manager::handle_modal_gump_event(
 		}
 		break;
 	case SDL_FINGERMOTION: {
+                printf("Finger motion!\n");
 		gwin->get_win()->screen_to_game(event.button.x, event.button.y, gwin->get_fastmouse(), gx, gy);
 		static int numFingers = 0;
 		SDL_Finger* finger0 = SDL_GetTouchFinger(event.tfinger.touchId, 0);
@@ -702,7 +704,13 @@ bool Gump_manager::do_modal_gump(
 		Mouse::mouse_update = false;
 		SDL_Event event;
 		while (!escaped && !gump->is_done() && SDL_PollEvent(&event))
+		{
+			printf("Got event %s - %d\n", __FILE__, event.type);
+#ifdef __SWITCH__
+			if (!convert_touch_to_mouse(gwin, event))
+#endif
 			escaped = !handle_modal_gump_event(gump, event);
+		}
 
 		if (gump->run() || gwin->is_dirty()) {
 			gwin->paint();  // Paint each cycle.

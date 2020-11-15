@@ -140,6 +140,7 @@ int U7ListFiles(const std::string &mask, FileList &files) {
 #include <glob.h>
 
 int U7ListFiles(const std::string &mask, FileList &files) {
+#ifndef __SWITCH__
 	glob_t globres;
 	string path(get_system_path(mask));
 	int err = glob(path.c_str(), GLOB_NOSORT, nullptr, &globres);
@@ -158,6 +159,10 @@ int U7ListFiles(const std::string &mask, FileList &files) {
 		cerr << "Glob error " << err << endl;
 		return err;
 	}
+#else
+  return 1;
+#endif
+
 }
 
 #endif

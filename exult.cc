@@ -99,6 +99,7 @@
 #include "ShortcutBar_gump.h"
 #include "ignore_unused_variable_warning.h"
 #include "touchui.h"
+#include "event_convert.h"
 using namespace Pentagram;
 
 #ifdef __IPHONEOS__
@@ -272,11 +273,24 @@ void do_cleanup_output() {
 /*
  *  Main program.
  */
+#ifdef __SWITCH__
+#include <switch.h>
+#endif
 
 int main(
     int argc,
     char *argv[]
 ) {
+#ifdef __SWITCH__
+  Result nsError = nsInitialize();
+  if (R_FAILED(nsError)) {
+    return 1;
+  }
+  socketInitializeDefault();
+  nxlinkConnectToHost(true, false);
+  romfsInit();
+  printf("test\n");
+#endif
 	bool    needhelp = false;
 	bool    showversion = false;
 	int     result;
@@ -411,6 +425,10 @@ int main(
 		cerr << "============================" << endl;
 		result = e.get_errno();
 	}
+#ifdef __SWITCH__
+  romfsExit();
+  nsExit();
+#endif
 
 	return result;
 }
@@ -429,15 +447,18 @@ int exult_main(const char *runpath) {
 #endif
 	// Read in configuration file
 	config = new Configuration;
+	printf("read config\n");
 
 	if (!arg_configfile.empty()) {
 		config->read_abs_config_file(arg_configfile);
 	} else {
 		config->read_config_file(USER_CONFIGURATION_FILE);
 	}
+	printf("read done\n");
 
 	// reset-video command line option
 	if (arg_reset_video) {
+		printf("Resetting video\n");
 		config->set("config/video/display/width", 640, false);
 		config->set("config/video/display/height", 480, false);
 		config->set("config/video/game/width", 320, false);
@@ -461,13 +482,18 @@ int exult_main(const char *runpath) {
 		}
 		config->remove("config/gameplay/allow_double_right_move", false);
 	}
+	printf("setup directories\n");
 
 	// Setup virtual directories
 	string data_path;
+	printf("%p - %s - %s\n", config, data_path.c_str(), EXULT_DATADIR);
 	config->value("config/disk/data_path", data_path, EXULT_DATADIR);
+	printf("setup data dir\n");
 	setup_data_dir(data_path, runpath);
+	printf("setting music path\n");
 
 	std::string default_music = get_system_path("<DATA>/music");
+	printf("set music path\n");
 	config->value("config/disk/music_path", music_path, default_music.c_str());
 
 	add_system_path("<MUSIC>", music_path);
@@ -1148,7 +1174,13 @@ static void Handle_events(
 
 		SDL_Event event;
 		while (!quitting_time && SDL_PollEvent(&event))
+		{
+#ifdef __SWITCH__
+			if (convert_touch_to_mouse(gwin, event))
+				continue;
+#endif
 			Handle_event(event);
+		}
 
 		// Animate unless dormant.
 		if (gwin->have_focus() && !dragging)
@@ -1273,6 +1305,7 @@ static inline bool LostFocus(SDL_Event& event) {
 static void Handle_event(
     SDL_Event &event
 ) {
+	printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 
 	// Mouse scale factor
 	bool dont_move_mode = gwin->main_actor_dont_move();
@@ -1286,7 +1319,7 @@ static void Handle_event(
 	static uint32 last_b1_click = 0;
 	static uint32 last_b3_click = 0;
 	static uint32 last_b1down_click = 0;
-	//cout << "Event " << (int) event.type << " received"<<endl;
+	printf("Got event %s - %d\n", __FILE__, event.type);
 	switch (event.type) {
 
 	// Quick saving to make sure no game progress gets lost
@@ -1469,6 +1502,7 @@ static void Handle_event(
 	}
 	// two-finger scrolling of view port with SDL2.
 	case SDL_FINGERMOTION: {
+	       printf("Finger motion\n");
 		if (!cheat() || !gwin->can_scroll_with_mouse()) break;
 		static int numFingers = 0;
 		SDL_Finger* finger0 = SDL_GetTouchFinger(event.tfinger.touchId, 0);
@@ -1753,6 +1787,11 @@ static bool Get_click(
 		// Mouse scale factor
 		static bool rightclick;
 		while (SDL_PollEvent(&event))
+			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
+#ifdef __SWITCH__
+			if (convert_touch_to_mouse(gwin, event))
+				continue;
+#endif
 			switch (event.type) {
 			case SDL_MOUSEBUTTONDOWN:
 				SDL_SetWindowGrab(gwin->get_win()->get_screen_window(), SDL_TRUE);
@@ -1918,6 +1957,7 @@ void Wait_for_arrival(
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
+			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 			switch (event.type) {
 			case SDL_MOUSEMOTION:
 				gwin->get_win()->screen_to_game(event.motion.x, event.motion.y, gwin->get_fastmouse(), mx, my);
@@ -2003,6 +2043,7 @@ void Wizard_eye(
 		}
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
+			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 			switch (event.type) {
 			case SDL_FINGERMOTION: {
 				if(event.tfinger.dy > 0) {

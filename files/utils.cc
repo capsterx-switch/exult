@@ -414,6 +414,7 @@ bool U7exists(
     const char *fname         // May be converted to upper-case.
 ) {
 	string name = get_system_path(fname);
+	printf("Looking for %s (%s)\n", name.c_str(), fname);
 	struct stat sbuf;
 
 	int uppercasecount = 0;
@@ -633,6 +634,8 @@ string Get_home() {
 			home_dir = ".";
 	}
 #endif // PORTABLE_WIN32_EXULT
+#elif defined(__SWITCH__)
+	home_dir = "sdmc:/switch/exult/";
 #else
 	const char *home = nullptr;
 	if ((home = getenv("HOME")) != nullptr)
@@ -671,26 +674,46 @@ void setup_data_dir(
 #endif
 
 	// First, try the cfg value:
+	printf("Add data\n");
 	add_system_path("<DATA>", data_path);
 	if (U7exists(EXULT_FLX))
+	{
+		printf("fail\n");
 		return;
+	}
 
 	// Now, try default -- if warranted.
+	printf("next\n");
 	if (data_path != EXULT_DATADIR) {
+	printf("1\n");
 		add_system_path("<DATA>", EXULT_DATADIR);
+	printf("2\n");
 		if (U7exists(EXULT_FLX))
+		{
+	printf("3\n");
 			return;
+		}
 	}
+	size_t print_count=4;
+	printf("%d\n", print_count++);
 
 	// Try "data" subdirectory for current working directory:
 	add_system_path("<DATA>", "data");
+	printf("%d\n", print_count++);
 	if (U7exists(EXULT_FLX))
+	{
+	printf("%d\n", print_count++);
 		return;
+	}
 
 	// Try "data" subdirectory for exe directory:
+	printf("%d\n", print_count++);
 	const char *sep = std::strrchr(runpath, '/');
+	printf("%d\n", print_count++);
 	if (!sep) sep = std::strrchr(runpath, '\\');
+	printf("%d\n", print_count++);
 	if (sep) {
+	printf("%d\n", print_count++);
 		int plen = sep - runpath;
 		char *dpath = new char[plen + 10];
 		std::strncpy(dpath, runpath, plen + 1);
@@ -699,23 +722,33 @@ void setup_data_dir(
 		add_system_path("<DATA>", dpath);
 		delete [] dpath;
 	} else
+	{
+	printf("%d\n", print_count++);
 		add_system_path("<DATA>", "data");
+	}
 	if (U7exists(EXULT_FLX))
+	{
+	printf("%d\n", print_count++);
 		return;
+	}
 
+	printf("%d\n", print_count++);
 	if (is_system_path_defined("<BUNDLE>")) {
+	printf("%d\n", print_count++);
 		// We have the bundle, so lets use it. But lets also leave <DATA>
 		// with a sensible default.
 		add_system_path("<DATA>", data_path);
 		return;
 	}
 
+	printf("%d\n", print_count++);
+	printf("Here we are\n");
 	// We've tried them all...
 	std::cerr << "Could not find 'exult.flx' anywhere." << std::endl;
 	std::cerr << "Please make sure Exult is correctly installed," << std::endl;
 	std::cerr << "and the Exult data path is specified in the configuration file." << std::endl;
 	std::cerr << "(See the README file for more information)" << std::endl;
-	exit(-1);
+	exit(0);
 }
 
 static string Get_config_dir(const string& home_dir) {
@@ -732,7 +765,7 @@ static string Get_config_dir(const string& home_dir) {
 }
 
 static string Get_savehome_dir(const string& home_dir, const string& config_dir) {
-#ifdef __IPHONEOS__
+#if defined __IPHONEOS__ || defined(__SWITCH__)
 	ignore_unused_variable_warning(home_dir);
 	string savehome_dir(config_dir);
 	savehome_dir += "/save";
@@ -754,7 +787,7 @@ static string Get_savehome_dir(const string& home_dir, const string& config_dir)
 }
 
 static string Get_gamehome_dir(const string& home_dir, const string& config_dir) {
-#ifdef __IPHONEOS__
+#if defined(__IPHONEOS__) || defined(__SWITCH__)
 	ignore_unused_variable_warning(home_dir);
 	string gamehome_dir(config_dir);
 	gamehome_dir += "/game";
