@@ -66,6 +66,9 @@ public:
 	void gameplay_options();
 	void misc_options();
 	void input_options();
+#ifdef __SWITCH__
+	//void switch_options();
+#endif
 
 	static void do_exult_menu();
 };

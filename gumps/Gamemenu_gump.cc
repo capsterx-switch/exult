@@ -57,6 +57,11 @@ static const char *inputtext = "Input Options";
 static const char *quitmenutext = "Quit to Menu";
 static const char *quittext = "Quit";
 #endif
+#ifdef __SWITCH__
+//#include "SwitchOptions_gump.h"
+//static const char *switchtext = "Switch key mappings";
+#endif
+
 
 using Gamemenu_button = CallbackTextButton<Gamemenu_gump>;
 
@@ -77,6 +82,10 @@ Gamemenu_gump::Gamemenu_gump() : Modal_gump(nullptr, EXULT_FLX_GAMEMENU_SHP, SF_
 	        misctext, colx, rowy[y++], 108, 11);
 	buttons[id_input] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::input_options,
 	        inputtext, colx, rowy[y++], 108, 11);
+#ifdef __SWITCH__
+	//buttons[id_input] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::switch_options,
+//	        switchtext, colx, rowy[y++], 108, 11);
+#endif
 #ifndef __IPHONEOS__
 	if (!gwin->is_in_exult_menu())
 		buttons[id_quit] = std::make_unique<Gamemenu_button>(this, &Gamemenu_gump::quit_exult,
@@ -139,6 +148,13 @@ void Gamemenu_gump::input_options() {
 	InputOptions_gump input_opts;
 	gumpman->do_modal_gump(&input_opts, Mouse::hand);
 }
+
+#ifdef __SWITCH__
+//void Gamemenu_gump::switch_options() {
+//	SwitchOptions_gump input_opts;
+//	gumpman->do_modal_gump(&input_opts, Mouse::hand);
+//}
+#endif
 
 void Gamemenu_gump::paint() {
 	Gump::paint();

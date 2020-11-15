@@ -143,6 +143,10 @@ static int SDLCALL SDL_putenv(const char *_var) {
 
 Configuration *config = nullptr;
 KeyBinder *keybinder = nullptr;
+#ifdef __SWITCH__
+#include "switch_keys.h"
+SwitchKeys *switchkeys = nullptr;
+#endif
 GameManager *gamemanager = nullptr;
 
 /*
@@ -981,6 +985,9 @@ static int Play() {
 
 	Audio::Destroy();   // Deinit the sound system.
 	delete keybinder;
+#ifdef __SWITCH__
+	delete switchkeys;
+#endif
 	delete config;
 	Free_text();
 	fontManager.reset();

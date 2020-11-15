@@ -94,6 +94,10 @@
 #endif
 #include "ItemMenu_gump.h"
 
+#ifdef __SWITCH__
+#include "switch_keys.h"
+#endif
+
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -555,16 +559,16 @@ void Game_window::init_files(bool cycle) {
 	// initialize keybinder
 	delete keybinder;
 	keybinder = new KeyBinder();
+	delete switchkeys;
+	switchkeys = new SwitchKeys();
 
 	std::string d;
 	std::string keyfilename;
+        
 	d = "config/disk/game/" + Game::get_gametitle() + "/keys";
 	config->value(d.c_str(), keyfilename, "(default)");
+printf("Loading %s\n", keyfilename.c_str());
 	if (keyfilename == "(default)") {
-#ifdef __SWITCH__
-		//load alt keys
-		//load keys
-#endif
 		config->set(d.c_str(), keyfilename, true);
 		keybinder->LoadDefaults();
 	} else {
@@ -575,6 +579,20 @@ void Game_window::init_files(bool cycle) {
 			keybinder->LoadDefaults();
 		}
 	}
+#ifdef __SWITCH__
+       d = "<CONFIG>/" + Game::get_gametitle() + "/switch_keys";
+       {
+         std::string tmp;
+         config->value("config/disk/game/blackgate/path", tmp, "NONE");
+         printf("game path: %s\n", tmp.c_str());
+       }
+       try {
+         printf("Loading keys: %s - %s\n", d.c_str(), get_system_path(d.c_str()).c_str());
+         switchkeys->LoadFromFileInternal(d.c_str());
+       } catch (file_open_exception &err) {
+         cout << "Key mappings file '" << d.c_str() << "' not found, falling back to default mappings." << endl;
+      }
+#endif
 	keybinder->LoadFromPatch();
 	CYCLE_RED_PLASMA();
 

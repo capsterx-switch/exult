@@ -90,6 +90,10 @@ enum quitting_time_enum {
 } ;
 
 extern KeyBinder *keybinder;
+#ifdef __SWITCH__
+class SwitchKeys;
+extern SwitchKeys *switchkeys;
+#endif
 extern Configuration *config;
 extern GameManager *gamemanager;
 

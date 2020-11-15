@@ -1,6 +1,8 @@
 #include "event_convert.h"
 #include "gamewin.h"
 #include <SDL.h>
+#include <switch_keys.h>
+#include "exult.h"
 
 typedef Uint32 SDL_MouseID;
 extern "C" {
@@ -44,6 +46,11 @@ bool convert_touch_to_mouse (Game_window *gwin, SDL_Event & event)
        printf("sending released\n");
        return true;
      }
+  } else if (switchkeys != NULL && (event.type == SDL_JOYBUTTONDOWN || event.type == SDL_JOYBUTTONUP))
+  {
+    printf("Got joy button: %d\n", event.jbutton.button);
+    switchkeys->key_event(event.jbutton.button, event.type == SDL_JOYBUTTONDOWN ? true : false);
+    return true;
   }
   return false;
 }
