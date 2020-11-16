@@ -417,9 +417,12 @@ int main(
 		delete gamemanager;
 		delete Game_window::get_instance();
 		delete game;
+		printf("Destroy audio\n");
 		Audio::Destroy();   // Deinit the sound system.
 		delete config;
+		printf("video quit\n");
 		SDL_VideoQuit();
+		printf("sdl quit\n");
 		SDL_Quit();
 		result = 0;
 	} catch (const exult_exception &e) {
@@ -429,14 +432,16 @@ int main(
 		     "errno: " << e.get_errno() << endl;
 		if (e.get_errno() != 0)
 			perror("Error Description");
-		cerr << "============================" << endl;
+		cout << "============================" << endl;
 		result = e.get_errno();
 	}
-#ifdef __SWITCH__
-  romfsExit();
-  nsExit();
-#endif
 
+#ifdef __SWITCH__
+	romfsExit();
+	socketExit();
+	nsExit();
+	printf("Returning result: %d\n", result);
+#endif
 	return result;
 }
 
@@ -758,7 +763,9 @@ static void Init(
 		cerr << "Unable to initialize SDL: " << SDL_GetError() << endl;
 		exit(-1);
 	}
+#ifndef __SWITCH__
 	std::atexit(SDL_Quit);
+#endif
 
 	SDL_SysWMinfo info;     // Get system info.
 #ifdef USE_EXULTSTUDIO
