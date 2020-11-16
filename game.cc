@@ -46,6 +46,9 @@
 #include "gamemgr/modmgr.h"
 #include "shapes/miscinf.h"
 #include "array_size.h"
+#ifdef __SWITCH__
+#include "event_convert.h"
+#endif
 
 using std::cout;
 using std::endl;
@@ -460,6 +463,10 @@ int wait_delay(int ms, int startcol, int ncol, int rotspd) {
 		// this may be a bit risky... How fast can events be generated?
 		while (SDL_PollEvent(&event)) {
 			printf("Got event %s - %d\n", __FILE__, event.type);
+#ifdef __SWITCH__       
+                        if (convert_touch_to_mouse(gwin, event))
+                           continue;
+#endif
 			switch (event.type) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {

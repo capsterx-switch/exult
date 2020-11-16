@@ -144,8 +144,8 @@ static int SDLCALL SDL_putenv(const char *_var) {
 Configuration *config = nullptr;
 KeyBinder *keybinder = nullptr;
 #ifdef __SWITCH__
-#include "switch_keys.h"
-SwitchKeys *switchkeys = nullptr;
+#include "switch/keymap.hpp"
+std::unique_ptr<nswitch::Switch_Key_Map> switchkeys;
 #endif
 GameManager *gamemanager = nullptr;
 
@@ -281,7 +281,7 @@ void do_cleanup_output() {
  *  Main program.
  */
 #ifdef __SWITCH__
-#include <switch.h>
+#include "switch/init.hpp"
 #endif
 
 int main(
@@ -289,14 +289,7 @@ int main(
     char *argv[]
 ) {
 #ifdef __SWITCH__
-  Result nsError = nsInitialize();
-  if (R_FAILED(nsError)) {
-    return 1;
-  }
-  socketInitializeDefault();
-  nxlinkConnectToHost(true, false);
-  romfsInit();
-  printf("test\n");
+  nswitch::init();
 #endif
 	bool    needhelp = false;
 	bool    showversion = false;
@@ -437,10 +430,8 @@ int main(
 	}
 
 #ifdef __SWITCH__
-	romfsExit();
-	socketExit();
-	nsExit();
-	printf("Returning result: %d\n", result);
+	nswitch::deinit();
+	printf("Returning %d\n", result);
 #endif
 	return result;
 }
@@ -992,9 +983,6 @@ static int Play() {
 
 	Audio::Destroy();   // Deinit the sound system.
 	delete keybinder;
-#ifdef __SWITCH__
-	delete switchkeys;
-#endif
 	delete config;
 	Free_text();
 	fontManager.reset();
@@ -1806,6 +1794,7 @@ static bool Get_click(
 		// Mouse scale factor
 		static bool rightclick;
 		while (SDL_PollEvent(&event))
+		{
 			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 #ifdef __SWITCH__
 			if (convert_touch_to_mouse(gwin, event))
@@ -1906,6 +1895,7 @@ static bool Get_click(
 				else if (LostFocus(event))
 					gwin->lose_focus();
 			}
+		}
 		if (dragging)
 			gwin->paint_dirty();
 		Mouse::mouse->show();       // Turn on mouse.
@@ -1977,6 +1967,10 @@ void Wait_for_arrival(
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
+#ifdef __SWITCH__
+			if (convert_touch_to_mouse(gwin, event))
+				continue;
+#endif
 			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 			switch (event.type) {
 			case SDL_MOUSEMOTION:
@@ -2065,6 +2059,10 @@ void Wizard_eye(
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
+#ifdef __SWITCH__
+			if (convert_touch_to_mouse(gwin, event))
+				continue;
+#endif
 			printf("Got event %s:%d - %d\n", __FILE__, __LINE__, event.type);
 			switch (event.type) {
 			case SDL_FINGERMOTION: {

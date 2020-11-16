@@ -5,6 +5,7 @@ AM_CPPFLAGS = -I$(srcdir) -I$(srcdir)/headers -I$(srcdir)/imagewin -I$(srcdir)/s
 	-I$(srcdir)/objs -I$(srcdir)/conf -I$(srcdir)/files -I$(srcdir)/gumps \
 	-I$(srcdir)/audio -I$(srcdir)/audio/midi_drivers -I$(srcdir)/pathfinder \
 	-I$(srcdir)/usecode -I$(srcdir)/shapes/shapeinf \
+	-I$(srcdir)/switch-utils/include \
 	$(SDL_CFLAGS) $(VORBIS_CFLAGS) $(OGG_CFLAGS) $(INCDIRS) $(WINDOWING_SYSTEM) \
 	$(DEBUG_FLAGS) $(CPPFLAGS) -DEXULT_DATADIR=\"$(EXULT_DATADIR)\"
 
@@ -108,7 +109,13 @@ exult_SOURCES =	\
 	xdrag.cc	\
 	xdrag.h         \
 	switch/switchui.cc \
-	switch_keys.cc
+	switch_keys.cc \
+	switch-utils/src/rstick_to_mouse.cpp \
+	switch-utils/src/keymap.cpp \
+	switch-utils/src/touch_to_mouse.cpp \
+	switch-utils/src/string.cpp \
+	switch-utils/src/keyboard.cpp \
+	switch-utils/src/init.cpp
 
 if BUILD_MT32EMU
 EXTRA_EXULTLIBS=audio/midi_drivers/mt32emu/libmt32emu.la

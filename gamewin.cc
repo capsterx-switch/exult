@@ -95,6 +95,7 @@
 #include "ItemMenu_gump.h"
 
 #ifdef __SWITCH__
+#include "switch/keymap.hpp"
 #include "switch_keys.h"
 #endif
 
@@ -559,8 +560,7 @@ void Game_window::init_files(bool cycle) {
 	// initialize keybinder
 	delete keybinder;
 	keybinder = new KeyBinder();
-	delete switchkeys;
-	switchkeys = new SwitchKeys();
+	switchkeys.reset(new nswitch::Switch_Key_Map);
 
 	std::string d;
 	std::string keyfilename;
@@ -588,7 +588,7 @@ printf("Loading %s\n", keyfilename.c_str());
        }
        try {
          printf("Loading keys: %s - %s\n", d.c_str(), get_system_path(d.c_str()).c_str());
-         switchkeys->LoadFromFileInternal(d.c_str());
+         LoadFromFileInternal(switchkeys.get(), d);
        } catch (file_open_exception &err) {
          cout << "Key mappings file '" << d.c_str() << "' not found, falling back to default mappings." << endl;
       }

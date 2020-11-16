@@ -91,8 +91,10 @@ enum quitting_time_enum {
 
 extern KeyBinder *keybinder;
 #ifdef __SWITCH__
-class SwitchKeys;
-extern SwitchKeys *switchkeys;
+namespace nswitch {
+class Switch_Key_Map;
+}
+extern std::unique_ptr<nswitch::Switch_Key_Map> switchkeys;
 #endif
 extern Configuration *config;
 extern GameManager *gamemanager;

@@ -46,6 +46,9 @@
 #include "ignore_unused_variable_warning.h"
 #include "touchui.h"
 #include "Gump_manager.h"
+#ifdef __SWITCH__
+#include "event_convert.h"
+#endif
 
 const char *CheatScreen::schedules[33] = {
 	"Combat",
@@ -447,6 +450,10 @@ bool CheatScreen::SharedInput(char *input, int len, int &command, Cheat_Prompt &
 		Delay();
 		while (SDL_PollEvent(&event)) {
 			printf("Got event %s - %d\n", __FILE__, event.type);
+#ifdef __SWITCH__       
+                        if (convert_touch_to_mouse(gwin, event))
+                           continue;
+#endif
 			// Touch on the cheat screen will bring up the keyboard
 			if (event.type == SDL_MOUSEBUTTONDOWN) {
 				if (SDL_IsTextInputActive())

@@ -35,6 +35,9 @@
 #include "SDL_events.h"
 #include "SDL_stdinc.h"
 #include "SDL_scancode.h"
+#ifdef __SWITCH__
+#include "event_convert.h"
+#endif
 
 using std::atoi;
 using std::size_t;
@@ -217,6 +220,10 @@ bool TextScroller::run(Game_window *gwin) {
 			// this could be a problem when too many events are produced
 			while (SDL_PollEvent(&event)) {
 			printf("Got event %s - %d\n", __FILE__, event.type);
+#ifdef __SWITCH__       
+                          if (convert_touch_to_mouse(gwin, event))
+                             continue;
+#endif
 				switch (event.type) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym == SDLK_RSHIFT || event.key.keysym.sym == SDLK_LSHIFT)
