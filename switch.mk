@@ -38,8 +38,7 @@ APP_TITLE := exult
 APP_AUTHOR := 
 APP_VERSION := 0.1
 ROMFS=data
-#ICON		:=	icon.jpg
-NO_ICON=1
+ICON		:=	icon.jpg
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
